@@ -1,0 +1,120 @@
+---
+title: "Introduction to Data Part 2"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+## The objectives of Period 3 are to:
+  
+* Set the working directory and import a .csv file
+* Examine the content of the imported file
+* Describe what a data frame is
+* Subset a data frame using criteria
+* Manipulate columns
+
+## Importing data
+
+* Open RStudio --> Create a new script --> save script in the Period 3 folder 
+* Set the working directory --> click "Session" --> "Set Working Directory" --> "To Source File Location"
+* Create a new object "*datum*" with a value of read.csv("Streams1990_2015.csv")
+* Notice Streams1990_2015 is a .csv file.
+
+```{r}
+datum <- read.csv("Streams1990_2015.csv") # Import "Streams1990_2015.csv" and save it in an object called "datum"
+```
+
+The function *read.csv()* is a diverse function and has a number of options see *?read.csv* for more information. It is important to mention that *read.csv()* will only work with .csv files! If you have a different file format or you're getting data from a different source (e.g., a website) you'll have to use a different function. 
+
+Whenever we import data it's important to actually look at the data and much sure there's nothing wonky going on with it. If we have a small data set we can view the data by simply printing the object (typing the name of the object on a new line and click "Run"). If you have a larger dataset R will not print everything, generally less than 100 rows. It's often best just to view a few rows of data. We can do that using the *head()* function which allows us to look at the first six rows of data.
+
+```{r}
+head(datum) # Look at the first six lines of data
+```
+
+Another useful function is *str()* which provides information on the data structure (e.g., data frame), the number of observations, the number of vairables, variable names, the data type of each variable, and a few examples of values.
+
+```{r}
+str(datum) # Look at the structure of the data
+```
+
+There are numerous other useful functions that help us get a sense of the content and structure of the data. The following is a noninclusive list:
+
+* Size
+  * *nrow()* - Prints the number of rows
+  * *ncol()* - Prints the number of columns
+* Content
+  * *head()* - Prints the first 6 lines
+  * *tail()* - Prints the last 6 lines
+* Names
+  * *names()* - Prints the coulmn names
+  * *rownames()* - Prints row names
+* Summary
+  * *summary()* - Prints summary statistics 
+  
+The data we have just imported is referred to as a "data frame". A data frame is one of the most common data structures we deal with and can be thought of as an excel spreadsheet. We have a bunch of rows and columns and the columns are typically made up of a bunch of different datatypes (e.g., numeric, character, integer, ect.). A data frame is different from a vector in that a data frame is two dimensional and can contain more than one data type.
+
+## Manipulating Data frames
+
+Once we import a dataset we often need to extract specific variables. We may even need to fix a few values. Subsetting a data frame is very similar to subsetting a vector. Remember that a data frame is two dimensional so in order to make subsets we need to provide information on the columns we want subsetted and the rows. Suppose we want to select the value in the third observation and fifth variable we would code:
+
+```{r}
+datum[3, 5] # Select the element in the third observation and the fifth variable of data frame "datum"
+```
+
+Keep in mind that inside the brackets we type the row followed by the column seperated by a comma *[row, column]*. It's sometimes necessary to select more than one observation and variable and create a new object with those data:
+
+```{r}
+datum2 <- datum[1:3, 5:8] # Select the first three observations and variables 5, 6, 7, and 8. Save them in a new object called "datum2" 
+datum2 # Print "datum2"
+```
+
+We may also want to exclude some observations and variables which we can do using the minus sign "-"
+
+```{r}
+datum3 <- datum2[-1, -2] # Remove the first observation and second variable from object "datum2". Save the new data frame as "datum3"
+datum3 # Print the first six lines of datum3
+```
+
+If we want to remove multiple sequential observations or variables at a time it's necessary to put the elements inside parentheses. 
+
+```{r}
+datum3 <- datum2[-(1:2), -(3:5)] # Remove the first and second observations and third, fourth and fifth variables rom object "datum2". Save the new data frame as "datum3".
+datum3 # Print the first six lines of datum3
+```
+
+If we notice an error or need to change a value we can do that selecting the value and reassigning it a new value.
+
+```{r}
+datum3[2, 3] <- "Largemouth Bass" # Rename the species in second observation and third variable to "Largemouth Bass"
+head(datum3) # Print the first six lines of datum3 
+```
+
+Another way of subsetting data is using variable names. Due to the fact that the datasheets we important are constantly changing it is HIGHLY recommended to make subsets using variable names. To subset using variable names we either put the variable name (in quotes) in brackets after the object name or we can use the "$" symbol.  
+
+```{r}
+Sub_samp_name <- datum["SubSampleName"] # Select just the "SubSampleName" variable from datumm and save it in a new object called "Sub_sample_name"
+
+Sub_samp_name <- datum$SubSampleName # Another way of Selecting just the "SubSampleName" variable from datumm and save it in a new object called "Sub_sample_name"
+```
+
+Now we can use variable names and criteria to subset data frames using the *subset()* function.
+
+```{r}
+datum2 <- subset(datum, SampleYear >= 2000 & (Species == "Largemouth Bass" | Species == "Smallmouth Bass"))
+unique(datum2$SampleYear)
+unique(datum2$Species)
+```
+
+We also have the ability to create new columns. To create a new column we type the name of the object and the name of the new column seperated by the "$" symbol. We can then assign values to this new column. As an example we can create a new column "Len_converted" which will be the "Len" column converted to standard units by dividing 25.4.
+
+```{r}
+datum2$Len_converted <- datum2$Len / 25.4
+```
+
+Sometimes it's more efficient to replace the contents of an existing column. To do that we can "write over" an exisiting column by setting the content of that column to something new. As an example instead of create a new column with converted lengths, lets just replace the existing lengths with converted lengths.
+
+```{r}
+datum2$Len <- datum2$Len / 25.4
+```

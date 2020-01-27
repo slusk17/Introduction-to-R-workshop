@@ -1,0 +1,171 @@
+---
+title: "Introduction to Data"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+## The objectives of Period 2 are to:
+* Understand the basic data structures:
+  * Atomic vector
+  * Matrix
+  * Array
+  * List
+  * Data frame
+* Understand what a vector does and how to create them
+* Understand the different data types
+  * Numeric
+  * Character
+  * Logical
+  * Integer
+  * Complex
+  * Raw
+* Understand how to subset vectors using conditional statements
+
+## Data Structures ## 
+
+Data structures are "containers" used to hold values. Data structures can be organized by their dimensionality and the number of different data types (e.g., numerical) they hold. The most basic data structure is the atomic vector which is one dimensional and holds a single data type. The most complex data structure is the data frame which is multidimensional and can hold multiple data types (very silmilar to the content in an excel spreadsheet).   
+
+## Vectors ##
+
+The most basic data structure in R is the *vector*. A vector is a composed of an array of the same *data type*. There are numerous data types with the most common being: numeric, character, logical, and integer. We create a vector by combining a series of values of the same data type using the function *c()*. As an example we can create a numeric vector of 1, 2, 3, 4, 5, and 6:
+
+```{r}
+datum <- c(1, 2, 3, 4, 5, 6)
+datum
+```
+
+We can also create a vector of character values:
+
+```{r}
+wildlife <- c("deer", "duck", "turkey")
+wildlife
+```
+
+In order to create a character value it is essential to use quotes around the value. If quotes were not used in our example than R will assume that were trying to create a vector using objects named deer, duck, and turkey. Considering we have not created objects names deer, duck, and turkey this will throw an error. 
+
+Vectors can be very long and difficult to view all at one time. Fortunately there functions that allow us to quickly inspect the vector. The function *length()* tells us how many elements are in a vector.
+
+```{r}
+length(wildlife)
+```
+
+The function *length(wildlife)* tells us there are three elements which we know are "deer", "duck" and "turkey".
+
+We can use the *class()* function to tell us the data type of each vector. This will become more important later when we deal with more complex data sets that may contain a typo. As an example if we import a large excel spreadsheet containing hundreds of rows worth of data and in one cell there is a "o" opposed to a "0", the data type of that entire column will become factor instead of integer. Additionally, some functions may require a vector of a certain data type. If your vector is the wrong data type that function will not work properly.  
+
+```{r}
+class(datum)
+```
+
+The class of datum is *numeric*.
+
+Another useful function is *str()* which provides a summary of an object. The summary provides information such as: the data structure type, the number of observations and variables, the variable names, and variable data type. This becomes more useful when we start handling much larger and complex objects.
+
+```{r}
+str(datum)
+```
+
+We can also use the *c()* function to add elements to an existing vector. As example we can add to the existing vector *wildlife* by "writing over it" and using *c()* to add an element "candaian honker". We can repeat the process and add "mallard"
+
+```{r}
+wildlife <- c(wildlife, "canadian honker")
+wildlife <- c(wildlife, "mallard")
+wildlife
+```
+
+So far we have covered two data types (numeric and character) but there are four more:
+
+* *"logical"* uses elements that are either "TRUE" or "FALSE"
+* *"integer"* whole numbers
+* *"complex"* represents numbers with real and imaginary parts (e.g., 5 + 4i)
+* *"raw"* used to hold raw bytes
+
+Atomic vectors contain elements of all the same data type. If you attempt to create a vector with multiple data types, R will do it's best to "coerce" the content into a single data type where information is not lost. 
+
+
+```{r}
+datum_wildlife <- c(datum, wildlife)
+datum_wildlife
+class(datum_wildlife)
+```
+
+In this case you cannot turn the *wildlife* vector into integers but you can turn integers into characters.
+
+### Subsetting vectors 
+
+An important aspect of using vectors is the ability to specifically select elements. The ability to select a specific element in a vector allows the user to do a multitude of tasks such as subsetting data. If we want to extract a column from a vector we type the name of the vector followed by square brackets "[]" with the element of interest inside the brackets. As an example if we wanted to extract the second element of the object *wildlife* we could use the following:
+
+```{r}
+wildlife[2]
+```
+
+Sometimes you may want to select multiple elements at one time. We can do that using our friend the *C()* function.Suppose we wanted to extract the second and fifth elements of the object *wildlife* we could using the following:
+
+```{r}
+wildlife[c(2, 5)]
+```
+
+There are times when it may be most efficient to subset a series of sequential elements. To select a series of sequential elements we can the *c()* inconjunction with the colon. As an example lets subset elements two through five. 
+
+```{r}
+wildlife[c(2:5)]
+```
+
+Instead of extracting specific elements, it is sometimes more efficient to remove elements. We can remove elements simply by placing a minus symbol before the elements we want to remove. As an example lets remove the second and fifth elements of the object *wildlife*.
+
+```{r}
+wildlife[-c(2, 5)]
+```
+
+## Conditional subsetting 
+
+Another useful way of subsetting data is using conditionals. We can make conditional subsets using relational and logical (Boolean) operators. First lets focus on relational operators. Relational operators are used to compare values to one another (e.g., is this value greater than that value). The relational operators available in R include:
+
+* *<*  Less than
+* *>*  Greater than
+* *<=* Less than or equal to
+* *>=* Greater than or equal to
+* *==* Equal to
+* *!=* Does not equal
+
+As an example lets create a new vector called *length* with values of 225, 300, 350, 400, 500 and subset all lengths that are greater than 300 using the greater than operator *>*. To do this we can use the following code:
+
+```{r}
+length <- c(225, 300, 350, 400, 500)
+length[length > 300]
+```
+
+We could make a similar subset for lengths that are less than 300 using the less than operator *<*. What if we also wanted to subset based on the criteria of less than or equal to 300? We can make this criteria in R using the combination of < and =. As an example:
+
+```{r}
+length <- c(225, 300, 350, 400, 500)
+length[length <= 300]
+```
+
+If we want to subset specific values we can use the double equal sign "==". The double equal sign should not be confused with the "=" these operators do completely different tasks. The double equal sign means "equal to" whereas the single equal sign performs variable assignment (very similar to using <-). 
+
+```{r}
+length[length == 300]
+```
+
+When making subsets sometimes it's easier to set a conditional that is "not equal to". With R the exclamation mark "!" is interpreted as "not". Therefore we can use "!" along with "=" to make a conditional that removes values. 
+
+```{r}
+wildlife[wildlife != "turkey"]
+```
+
+Now lets focus on logical operators. Logical operators are used to carry out Boolean operations. The logical operators available in R include:
+
+* *!*  Logical NOT
+* *&*  Logical AND (element-wise)
+* *&&* Logical AND (Comparse only the first element)
+* *|*  Logical OR (element-wise)
+* *||* Logical OR (Comparse only the first element)
+
+We often use these operators in conjunction with relational operators on data structures that are more complex than vectors (e.g., Data frames). As an example we may want to make a subset were the "Species" equals "Whitetail" (relational) AND (logical) the "Points" are greater than (relational) eight. As a quick example using a vector lets subset the length length for elements that are less than 300 OR greater than 350: 
+
+```{r}
+length[length < 300 | length > 350]
+```

@@ -1,0 +1,125 @@
+---
+title: "Data Wrangling"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+## The objectives of Period 4 are to:
+  
+* Install and load the dplyr package
+* Discuss and use five common dplyr verbs:
+  * *filter()*
+  * *arrange()*
+  * *select()*
+  * *mutate()*
+  * *summarize()*
+
+## Install dplyr
+
+* Open RStudio --> Create a new script --> save script in the Period 4 folder 
+* Set the working directory --> click "Session" --> "Set Working Directory" --> "To Source File Location"
+* Click "Install" in the upper left hand corner of the "Packages" tab (lower right RStudio quadrant) --> type "dplyr" in the "Packages" box --> click "Install"
+
+If the installation worked correctly you should see a message stating "package ‘dplyr’ successfully unpacked and MD5 sums checked" appear in the Console. At this point you have dplyr installed on your computer but to tell R you want to you dplyr you'll need to load it by typing: 
+
+```{r message=FALSE}
+library(dplyr)
+```
+
+You don't have to install dplyr every time you want to use it. It's installed on your computer so all you'll need to do is load it using library().
+
+At this point we've opened a new R script, saved it in our period 4 folder, set the working directory, installed dplyr, and loaded dyplr. Lets import those streams data again and assign them to an object "*datum*".
+
+```{r}
+datum <- read.csv("Streams1990_2015.csv")
+str(datum)
+```
+
+# Filter
+
+The first dplyr verb we're going to discuss is *filter()* the purpose of this verb is to select observations we're interested in and remove the observations we're not interested in. To use filter (or any dplyr verb) we'll start by typing the data frame of interest followed by the "pipe operator" which is a percent symbol, greater than symbol, percent symbol (%>%). Next we'll type *filter()* with the criteria for data we want to keep inside the parentheses. Lets remove all observations were the "Species" is blank. 
+
+```{r}
+datum <- datum %>%
+          filter(Species != "") # Here the "!=" can be interpreted as "does not euqal"
+str(datum)
+```
+
+Lets do another filter to select Smallmouth Bass, from the Buffalo River, that have a length between 180 and 279, that have a weight, and are individuals (Number variable == 1).
+
+```{r}
+datum <- datum %>%
+          filter(Species == "Smallmouth Bass", Waterbody == "Buffalo River", Len >= 180 & Len <= 279, Wt != 0, Number == 1)  # This selects only observations where the Species is Smallmouth Bass, length is 180 - 279, weight does not equal zero and the number is 1. 
+str(datum)
+```
+
+Lets make sure our filters actually worked. We can use our next verb *arrange()* to make sure we have the observations we need to conduct our analysis.
+
+# Arrange
+
+The second dplyr verb we're going to discuss is *arrange()*. The purpose of *arrange()* is to reorder data in our data frame. To use arrange we'll start by typing the data frame of interest followed pipe the "pipe operator". Next we'll type *arrange()* with the variable name we want to arrange inside the parentheses. Lets arrange the Len column  
+
+```{r}
+datum <- datum %>%
+          arrange(Len) # This arranges the "Len" column is ascending order
+head(datum)
+```
+
+Now that we know we've got the data were interested in lets remove any columns that aren't necessary. To keep only the columns we need for this analysis we can use our next verb *select()*
+
+# Select
+
+The *select()* verb is used to choose which columns we want in our analysis. For this analysis well need the "SampleYear", "Len" and "Wt". To select just those columns we'll use:
+
+```{r}
+datum <- datum %>%
+          select(SampleYear, Len, Wt) # This arranges the "Len" column is ascending order
+head(datum)
+```
+
+Now that we have just the columns we'll need we can use our next verb *mutate()*
+
+# Mutate
+
+So far we've filtered, arranged, and selected but we haven't actually changed any data yet - thats what *mutate()* does. Mutate is the verb that actually allows us to change data. Lets create a new column *wr* that holds the calculated relative weight for each individual 
+
+```{r}
+datum <- datum %>%
+          mutate(wr = (Wt) / (10 ^ (-5.329 + (3.2 * log10(Len))))*100)
+str(datum)
+```
+
+Lets take a look at the range of our relative weights and see if we have any outliers.
+
+```{r}
+range(datum$wr) # This will tell show us the smallest value and the largest value
+```
+
+It looks like we might have some outliers in these data. Maybe a measurement error? Maybe a data entry error? The best thing to do would be to go back to the field sheets and check the length, weight, and species and make sure everything is correct. For the sake of this exercise we're going to assume all realistic relative weights fall between 50 and 130. To do this we can add a *filter()* after the mutate by incorporating another "pipe":
+
+```{r}
+datum <- datum %>%
+          mutate(wr = (Wt) / (10 ^ (-5.329 + (3.2 * log10(Len))))*100) %>%
+          filter(wr > 50 & wr < 130)
+range(datum$wr)
+```
+
+Now that we've got all data we need to make our comparison, lets make our comparison. To calculate the mean we can use our the next and final verb we'll be discussing today *summarize()*.
+
+## Summarize
+
+The verb *summarize()* is very similar to *mutate()*. However, when we used *mutate()* we maintained the same number observations but added a variable (wr). When we call *summarize()* we will be left with just a summary. Lets calculate the mean and standard deviation associated with our relative weight estimates using *summarize()*. If we were to use *Summarize()* by itself we would get a single mean and standard deviation for all observations combined. Although this mean and standard deviation would be interesting, it really isn't that informative. It would be more informative if we had a mean and standard deviation for each year so we could start to evaluate trends. The best way to calculate the mean and standard deviation on a year by year basis is to group the observations by year. We can tell R to do that using *group_by()* before we *summarize()*. 
+
+```{r}
+datum <- datum %>%
+          mutate(wr = (Wt) / (10 ^ (-5.329 + (3.2 * log10(Len))))*100) %>%
+          filter(wr > 50 & wr < 130) %>%
+          group_by(SampleYear) %>%
+          summarize(mean = mean(wr),
+                    standard_deviation = sd(wr))
+datum
+```
+
+At this point we're ready to generate some figures and conduct a statistically rigerous analysis (Science!). 

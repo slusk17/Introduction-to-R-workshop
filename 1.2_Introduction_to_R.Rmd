@@ -1,0 +1,158 @@
+---
+title: 'Period 1: Introduction to R'
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+## The objectives of Period 1 are to:
+
+* Open RStudio and understand the function of the “four quadrants”
+* Create a new script, set the working directory, write basic code and save file
+* Assign values to objects
+* Solve simple arithmetic operations (using objects)
+* Add comments 
+* Understand what functions are and how to use them
+* Understand how the following terms relate to R: object, assign, value, call, function, options
+
+## Creating objects in R
+
+In its simplest form, R can be thought of as a basic calculator. For example we can use either the script or console to solve a basic mathematical expression (highlight code and click "Run" or place cursor behind expression and press "Crtl" + "Enter"):
+
+```{r}
+2 + 2
+```
+
+The [1] indicates that this is the first element. This becomes more important when dealing with larger outputs such as: 
+
+```{r}
+mtcars$qsec #qsec (1/4 mile time) is a column from the mtcars dataset 
+```
+In this example element number [13] is 17.60
+
+In order to do more complex and useful commands in R it is necessary to create objects. To create an *object* we type the name object name followed by the *value* and separated by the assignment operator "<-". The assignment operator assigns the value on the right to the object on the left. As an example we can assign the object "harvest" a value of 900. 
+
+```{r}
+harvest <- 900
+```
+
+Objects can be given any name and be as long as you would like. Object names should be informative but as simple as possible (you'll appreciate this later). There are a few rules with naming objects:
+
+* They cannot start with a number (5r is not valid but r5 is)
+* They cannot start with a symbol or special character
+* They cannot have spaces
+* There are some names that are fundamental functions in R and cannot be used (e.g. else, if, for, mean)
+* Capitalization matters: 'MALLARD' and 'mallard' are two different objects
+ 
+When creating objects in the script, R will not automatically print the value of the object in the console. However, you can make R print the value by typing the object name by itself or enclosing both the object and value in parentheses:
+
+```{r}
+harvest <- 900   # Doesn't print anything
+harvest          # Will print the value of 'harvest'
+(harvest <- 900) # Will print the value of 'harvest'
+```
+
+It is very important to leave notes and explanations of what your code is actually doing. Although you know what each line of code does now, there's a possibility you'll forget in the future. To leave comments use the '#' symbol. Anything to the right of a '#' symbol is ignored by R. 
+
+```{r}
+wal_release_16 <- 900   # Estimated number of Lake Ouachita Walleye released during 2016
+```
+
+We can reassign the *value* of *walleye_release* at any time using the assignment operator.
+
+```{r}
+wal_release_16 <- 890   # Estimated number of Lake Ouachita Walleye released during 2016
+```
+
+At this point we've created an object 'wal_release_16' that is is stored in our 'environment'. We can use this object in simple arithmetic or to create other objects 
+
+```{r}
+wal_release_16 <- 890   # Estimated number of Ouachita Walleye released during 2016
+wal_release_16_cor <- wal_release_16 + 150 # The corrected estimated number of Ouachita Walleye released during 2016
+```
+
+## Exercise 1
+
+ * Open RStudio
+ * Identify each RStudio “quadrant” and briefly describe how each quadrant is used
+ * Set the working directory to the Session 2 ---> Period 1 folder
+ * Create a new script named “exercise1” and save it in the Session 2 ---> Period 1 folder
+ * Create three objects in the script that hold:
+   * The number of Largemouth harvested in 2016 (value = 650)
+   * The number of Bluegill harvested in 2017 (value = 900)
+   * The number of Walleye harvested in 2018 (value = 768)
+ * Add a brief descript of the three objects you just created
+ * Print the value of the first object you created using the two methods discussed
+ * Create a fourth object that holds the sum of your three objects (use the object names)
+ * Save your file
+
+Below are the answers to exercise 1. Attempt the exercise BEFORE looking at answers.
+
+```{r}
+Largemouth = 650 # The number of Largemouth harvested in 2016
+Bluegill = 900 # The number of Bluegill harvested in 2017
+Walleye = 768 # The number of Walleye harvested in 2018
+
+Largemouth # Print the value of the object Largemouth Bass 
+(Largemouth = 650) # Alternative approach to printing the value of the object Largemouth Bass
+
+Bluegill # Print the value of the object Bluegill 
+(Bluegill = 900) # Alternative approach to printing the value of the object Bluegill
+
+Walleye # Print the value of the object Walleye
+(Walleye = 768) # Alternative approach to printing the value of the object Walleye
+
+Total = Largemouth + Bluegill + Walleye
+Total
+(Total = Largemouth + Bluegill + Walleye) # Alternative approach to printing the value of the object Total 
+
+```
+
+## Functions
+
+Functions can be thought of as "canned scripts" that perfrom specific tasks. There are numerous basic functions that come automatically preloaded when you download R (e.g. *sum()*). Functions are used by typing the name of the function followed immeditely by parentheses. Inside the parentheses are *arguements* that give the function information or instructions. Lets take a closer look at the function *sqrt()* which calculates the square root of a number. To run this function ("*calling*" the function), we put a numeric value in the parantheses.  
+
+```{r}
+sqrt(17) 
+```
+
+The sqrt() function is very basic and only accepts a single numeric value. However, there more complicated functions that accept a wider range of arguements such as objects, datasets, or even files (more on this later). For more complicated functions it's important to understand what arguements the function uses to work properly. In more complex functions default arguements may be used if an arguement is not explicitly listed by the user. These defaults are referred to as *options*. To view the arguements of a function we can use the function *args()*. As an example lets look at the arguements of *round()*. 
+
+```{r}
+args(round) # Type the name of the function without parantheses. This will print the arguements and options in the console 
+
+?round() # This will bring up a description of the function in the "Help" tab and will include a description of arguements
+```
+
+In the function *round()*, "digits" is considered an option and unless otherwise specified by the user, the function will automatically round to the nearest whole number.  
+
+```{r}
+round(9.432435)
+```
+
+However, if we're interested in including additional "digits" we can specify that in the function.
+
+```{r}
+round(9.432435, digits = 3) # It is good practice to list the name of the option when assigning it a value
+round(digits = 3, x = 9.432435) # If we label the options using the arguement names we can rearrange the order
+```
+
+## Exercise 2
+
+ * What is a function, what are arguements, and what are options?
+ * How can we tell what the arguements are of a function?
+ * What does the function seq() do and what are it's arguements?
+ * Create an object named "numbers"
+ * use the function *seq()* to make the value of "numbers" a sequence that goes from 1 to 151 by 2
+ * Print the value of "numbers"
+
+Below are the answers to exercise 1. Attempt the exercise BEFORE looking at answers.
+ 
+```{r}
+?seq # This tells us what seq() does and what it's arguements are. 
+numbers <- seq(from = 1, to = 151, by = 2) # A sequence of numbers beginning at 1 and running to 151 by 2. This sequence is assigned to the object "numbers"
+numbers
+```
+
+ 
